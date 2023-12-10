@@ -1,5 +1,12 @@
 # graph-theory-fp
 
+| NAME                               | NRP       |
+|------------------------------------|-----------|
+|Satria Surya Prana                  |5025211073 |
+|Mochammad Naufal Ihza Syahzada      |5025211260 |
+|Raden Roro Kayla Angelica Priambudi |5025211262 |
+|Khairiya Maisa Putri                |5025211192 |
+
 ### How to run the code
 
 - Go to terminal

@@ -1,5 +1,7 @@
 import requests
-import heapq
+
+from api import GOOGLE_API_KEY
+from dijkstra import dijkstra
 
 class Graph:
     def __init__(self):
@@ -12,7 +14,7 @@ class Graph:
 
     def add_edge(self, from_node, to_node, weight):
         self.edges[from_node].append((to_node, weight))
-        self.edges[to_node].append((from_node, weight))  # Assuming undirected graph
+        self.edges[to_node].append((from_node, weight))
 
 def get_distance_matrix(api_key, origins, destinations, mode='driving'):
     base_url = "https://maps.googleapis.com/maps/api/distancematrix/json"
@@ -50,37 +52,13 @@ def create_graph(api_key, origins, destinations, mode='driving'):
 
     return graph
 
-def dijkstra(graph, start):
-    heap = [(0, start)]
-    visited = set()
-    distances = {node: float('infinity') for node in graph.nodes}
-    distances[start] = 0
-
-    while heap:
-        (current_weight, current_node) = heapq.heappop(heap)
-
-        if current_node in visited:
-            continue
-
-        visited.add(current_node)
-
-        for (neighbor, weight) in graph.edges[current_node]:
-            if neighbor not in visited:
-                total_weight = current_weight + weight
-                if total_weight < distances[neighbor]:
-                    distances[neighbor] = total_weight
-                    heapq.heappush(heap, (total_weight, neighbor))
-
-    return distances
-
 def calculate_shortest_route(api_key, origins, destinations, mode='driving'):
     graph = create_graph(api_key, origins, destinations, mode)
-    shortest_route = dijkstra(graph, origins[0])  # Assuming start from the first origin
+    shortest_route = dijkstra(graph, origins[0]) 
 
     return shortest_route
 
-# Example usage:
-api_key = 'AIzaSyDgF5poAwCFoo4tPQBIMhmQjjVjs6srZ4c'
+api_key = GOOGLE_API_KEY
 origins = ["New York, NY", "Los Angeles, CA", "Chicago, IL"]
 destinations = ["San Francisco, CA", "Seattle, WA", "Miami, FL"]
 

@@ -1,69 +1,26 @@
-import requests
-
 from api import GOOGLE_API_KEY
 from dijkstra import dijkstra
+from function.create_graph import create_graph
+from function.calculate_shortest_route import calculate_shortest_route
+from function.get_distance_matrix import get_distance_matrix 
 
-class Graph:
-    def __init__(self):
-        self.nodes = set()
-        self.edges = {}
+def main():
+    api_key = GOOGLE_API_KEY 
 
-    def add_node(self, value):
-        self.nodes.add(value)
-        self.edges[value] = []
+    current_location = input("Enter your current location (city): ").strip()
+    mode = input("Enter the mode of travel (walking, biking, driving): ").strip().lower()
 
-    def add_edge(self, from_node, to_node, weight):
-        self.edges[from_node].append((to_node, weight))
-        self.edges[to_node].append((from_node, weight))
+    num_destinations = int(input("Enter the number of destinations (more than 2): "))
+    destinations = [input(f"Enter destination #{i + 1}: ").strip() for i in range(num_destinations)]
 
-def get_distance_matrix(api_key, origins, destinations, mode='driving'):
-    base_url = "https://maps.googleapis.com/maps/api/distancematrix/json"
-    
-    params = {
-        'origins': '|'.join(origins),
-        'destinations': '|'.join(destinations),
-        'mode': mode,
-        'key': api_key,
-    }
+    shortest_route = calculate_shortest_route(api_key, [current_location], destinations, mode)
 
-    response = requests.get(base_url, params=params)
-    data = response.json()
+    if shortest_route:
+        sorted_destinations = sorted(shortest_route.items(), key=lambda x: x[1]['distance'])
+        
+        print("\nSorted Places based on Distance:")
+        for node, data in sorted_destinations:
+            print(f"To {node}: Distance: {data['distance']} meters, Time: {data['time']} seconds")
 
-    if data['status'] == 'OK':
-        return data['rows']
-    else:
-        return None
-
-def create_graph(api_key, origins, destinations, mode='driving'):
-    graph = Graph()
-
-    for origin in origins:
-        graph.add_node(origin)
-
-    for destination in destinations:
-        graph.add_node(destination)
-
-    distance_matrix = get_distance_matrix(api_key, origins, destinations, mode)
-
-    for i, origin in enumerate(origins):
-        for j, destination in enumerate(destinations):
-            weight = distance_matrix[i]['elements'][j]['duration']['value']
-            graph.add_edge(origin, destination, weight)
-
-    return graph
-
-def calculate_shortest_route(api_key, origins, destinations, mode='driving'):
-    graph = create_graph(api_key, origins, destinations, mode)
-    shortest_route = dijkstra(graph, origins[0]) 
-
-    return shortest_route
-
-api_key = GOOGLE_API_KEY
-origins = ["New York, NY", "Los Angeles, CA", "Chicago, IL"]
-destinations = ["San Francisco, CA", "Seattle, WA", "Miami, FL"]
-
-shortest_route = calculate_shortest_route(api_key, origins, destinations)
-
-print("Shortest route:")
-for node, distance in shortest_route.items():
-    print(f"To {node}: {distance} seconds")
+if __name__ == "__main__":
+    main()

@@ -9,6 +9,9 @@
 
 ### How to run the code
 
+- Add file `api.py`
+- Inside that, add this line `GOOGLE_API_KEY = 'YOUR_API_KEY'`
+- Change the 'YOUR_API_KEY' with your own key
 - Go to terminal
 - Run this code `python app.py`
 - On terminal, input data

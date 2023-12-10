@@ -1,3 +1,6 @@
+from get_distance_matrix import get_distance_matrix 
+from graph import Graph
+
 def create_graph(api_key, origins, destinations, mode='driving'):
     graph = Graph()
 
